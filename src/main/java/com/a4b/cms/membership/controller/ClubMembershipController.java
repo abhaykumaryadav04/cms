@@ -40,11 +40,7 @@ public class ClubMembershipController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
 
-        MembershipResponse response = membershipService.requestMembership(
-                        clubId,
-                        userDetails.getUsername(),
-                        request);
-
+        MembershipResponse response = membershipService.requestMembership( clubId,userDetails.getUsername(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
       @GetMapping("/api/v1/clubs/{clubId}/join-requests")
@@ -58,8 +54,7 @@ public class ClubMembershipController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
 
-        return ResponseEntity.ok( membershipService.getClubMembership( clubId,status,
-                        userDetails.getUsername(),page,size));
+        return ResponseEntity.ok( membershipService.getClubMembership( clubId,status, userDetails.getUsername(),page,size));
 
     }
     @PatchMapping("/api/v1/clubs/{clubId}/join-requests/{requestId}")
@@ -70,14 +65,7 @@ public class ClubMembershipController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
 
-        return ResponseEntity.ok(
-                membershipService.reviewRequest(
-                        clubId,
-                        requestId,
-                        userDetails.getUsername(),
-                        request
-                )
-        );
+     return ResponseEntity.ok( membershipService.reviewRequest(clubId,requestId,userDetails.getUsername(),request));
     }
      @DeleteMapping("/api/v1/clubs/{clubId}/membership/me")
     public ResponseEntity<Void> leaveClub(
@@ -85,11 +73,16 @@ public class ClubMembershipController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
 
-        membershipService.leaveClub(
-                clubId,
-                userDetails.getUsername()
-        );
-
+        membershipService.leaveClub( clubId, userDetails.getUsername() );
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/api/v1/clubs/{clubId}/members")
+public ResponseEntity<Page<MembershipResponse>> getClubMembers(
+        @PathVariable UUID clubId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size,
+        @AuthenticationPrincipal UserDetails userDetails
+) {
+    return ResponseEntity.ok( membershipService.getClubMembership(clubId,MembershipStatus.ACTIVE, userDetails.getUsername(),page, size  ));
+}
 }

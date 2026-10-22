@@ -57,15 +57,24 @@ public class SecurityConfig {
                 "/api/v1/clubs",
                 "/api/v1/clubs/*"
                 ).permitAll()
-
               .requestMatchers(
                 HttpMethod.POST,
                 "/api/v1/clubs"
               ).hasRole("ADMIN")
-
-               .requestMatchers("/error").permitAll()
-
-                        .anyRequest().authenticated())
+               .requestMatchers(
+               HttpMethod.PATCH,
+           "/api/v1/clubs/*"
+             ).authenticated()
+            .requestMatchers(
+          HttpMethod.PATCH,
+         "/api/v1/clubs/*/status"
+            ).hasRole("ADMIN")
+         .requestMatchers(
+        HttpMethod.GET,
+        "/api/v1/clubs/*/members"
+              ).authenticated()
+              .requestMatchers("/error").permitAll()
+              .anyRequest().authenticated())
                 .addFilterBefore(
                         jwtFilter,
                         UsernamePasswordAuthenticationFilter.class
