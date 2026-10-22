@@ -47,12 +47,24 @@ public class SecurityConfig {
                                 .authenticationEntryPoint(securityExceptionHandler).accessDeniedHandler(securityExceptionHandler))
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/v1/auth/register",
-                                "/api/v1/auth/login"
-                        ).permitAll()
-                        .requestMatchers("/error").permitAll()
+                         .requestMatchers(
+                HttpMethod.POST,
+                "/api/v1/auth/register",
+                "/api/v1/auth/login"
+                ).permitAll()
+                 .requestMatchers( 
+                HttpMethod.GET,
+                "/api/v1/clubs",
+                "/api/v1/clubs/*"
+                ).permitAll()
+
+              .requestMatchers(
+                HttpMethod.POST,
+                "/api/v1/clubs"
+              ).hasRole("ADMIN")
+
+               .requestMatchers("/error").permitAll()
+
                         .anyRequest().authenticated())
                 .addFilterBefore(
                         jwtFilter,
