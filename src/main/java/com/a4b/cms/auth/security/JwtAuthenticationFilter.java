@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+    try{
          String authorizationHeader =request.getHeader("Authorization");
          if(authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -62,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
         } catch(JwtException| IllegalArgumentException| UsernameNotFoundException ex) {
             SecurityContextHolder.clearContext();
-        }
+        } 
         filterChain.doFilter(request, response); 
 
     }
