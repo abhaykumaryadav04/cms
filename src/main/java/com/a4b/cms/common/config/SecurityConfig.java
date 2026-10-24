@@ -38,16 +38,17 @@ public class SecurityConfig {
 
         JwtAuthenticationFilter jwtFilter =new JwtAuthenticationFilter( jwtService, userDetailsService);
 
-        http.csrf(csrf -> csrf.disable())
-              .sessionManagement(session ->
+http.csrf(csrf -> csrf.disable())
+        .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exceptions ->
+        .exceptionHandling(exceptions ->
                         exceptions
                                 .authenticationEntryPoint(securityExceptionHandler).accessDeniedHandler(securityExceptionHandler))
-                .authorizeHttpRequests(auth -> auth
-
-                         .requestMatchers(
+        .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/v1/admin/**")
+                .hasRole("ADMIN")
+                .requestMatchers(
                 HttpMethod.POST,
                 "/api/v1/auth/register",
                 "/api/v1/auth/login"

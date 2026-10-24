@@ -8,7 +8,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.a4b.cms.auth.dto.AuthSession;
 import com.a4b.cms.auth.dto.LoginRequest;
+import com.a4b.cms.auth.dto.RefreshTokenRotation;
 import com.a4b.cms.auth.dto.RegisterRequest;
 import com.a4b.cms.auth.security.JwtService;
 import com.a4b.cms.common.exception.ApiException;
@@ -24,10 +26,14 @@ public class AuthService {
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    public  AuthService(UserRepo userRepo,JwtService jwtService,PasswordEncoder passwordEncoder){
+    private final RefreshTokenService refreshTokenService;
+    public  AuthService(UserRepo userRepo,JwtService jwtService,PasswordEncoder passwordEncoder,
+        RefreshTokenService refreshTokenService
+    ){
         this.passwordEncoder=passwordEncoder;
         this.jwtService=jwtService;
         this.userRepo=userRepo;
+        this.refreshTokenService=refreshTokenService;
     }
     @Transactional 
     public  UserProfileResponse register(RegisterRequest request){
@@ -70,7 +76,7 @@ public class AuthService {
          return toProfileResponse(saved);
     }
       @Transactional(readOnly = true)
-    public AuthResponse login(
+    public AuthSession login(
             LoginRequest request
     ) {
 
@@ -89,15 +95,44 @@ public class AuthService {
             throw invalidCredentials();
         }
 
-        String token = jwtService.generateToken(user);
+     String accessToken =jwtService.generateToken(user);
 
-        return new AuthResponse(
-                token,
-                "Bearer",
-                jwtService.getExpirationSeconds(),
-                toProfileResponse(user)
+        String refreshToken =refreshTokenService.issueForUser(user);
+
+      AuthResponse response = new AuthResponse(
+        accessToken,
+        "Bearer",
+        jwtService.getExpirationSeconds(),
+        toProfileResponse(user)
         );
+
+     return new AuthSession(
+        response,
+        refreshToken);
     }
+ @Transactional
+public AuthSession refresh(String rawRefreshToken) {
+
+    RefreshTokenRotation rotation =refreshTokenService.rotate(rawRefreshToken);
+    User user = rotation.user();
+    String accessToken =jwtService.generateToken(user);
+
+    AuthResponse response = new AuthResponse(
+            accessToken,
+            "Bearer",
+            jwtService.getExpirationSeconds(),
+            toProfileResponse(user)
+    );
+
+    return new AuthSession(
+            response,
+            rotation.rawToken()
+    );
+}
+public void logout(String rawRefreshToken) {
+    refreshTokenService.revoke(rawRefreshToken);
+}
+
 
     private ApiException invalidCredentials() {
 

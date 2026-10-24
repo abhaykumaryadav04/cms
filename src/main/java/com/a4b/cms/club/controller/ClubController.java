@@ -21,8 +21,7 @@ import com.a4b.cms.club.dto.CreateClubRequest;
 import com.a4b.cms.club.dto.UpdateClubRequest;
 import com.a4b.cms.club.dto.UpdateClubStatus;
 import com.a4b.cms.club.service.ClubService;
-import com.a4b.cms.membership.dto.MembershipResponse;
-import com.a4b.cms.membership.entity.MembershipStatus;
+
 
 import jakarta.validation.Valid;
 

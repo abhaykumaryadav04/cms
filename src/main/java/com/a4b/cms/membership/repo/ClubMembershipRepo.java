@@ -35,5 +35,10 @@ public interface ClubMembershipRepo extends JpaRepository<ClubMembership,UUID>{
             MembershipStatus status,
             Collection<ClubRole> clubRoles
     );
+    Optional<ClubMembership> findFirstByClub_IdAndStatusAndClubRole(
+        UUID clubId,
+        MembershipStatus status,
+        ClubRole clubRole
+);
 
 }

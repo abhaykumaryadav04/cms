@@ -5,11 +5,14 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.a4b.cms.club.entity.Club;
 import com.a4b.cms.club.entity.ClubStatus;
+
+import jakarta.persistence.LockModeType;
 
 
 
@@ -35,5 +38,10 @@ public interface ClubRepo  extends JpaRepository<Club,UUID>{
             @Param("category") String category,
             Pageable pageable
     );
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+@Query("SELECT c FROM Club c WHERE c.id = :clubId")
+Optional<Club> findByIdForUpdate(
+        @Param("clubId") UUID clubId
+);
 
 }
