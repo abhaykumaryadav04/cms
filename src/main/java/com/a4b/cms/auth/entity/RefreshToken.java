@@ -3,8 +3,8 @@ package com.a4b.cms.auth.entity;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.data.annotation.Id;
 
+import jakarta.persistence.Id;
 import com.a4b.cms.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -22,7 +22,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity 
+
 @Table(
     name = "refresh_tokens",
     indexes = {
@@ -40,6 +40,7 @@ import lombok.NoArgsConstructor;
 @Builder 
 @NoArgsConstructor 
 @AllArgsConstructor 
+@Entity 
 public class RefreshToken {
    @Id
     @GeneratedValue(strategy = GenerationType.UUID)

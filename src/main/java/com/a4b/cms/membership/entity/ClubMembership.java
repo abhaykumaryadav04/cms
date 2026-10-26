@@ -3,7 +3,7 @@ package com.a4b.cms.membership.entity;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
 
 import com.a4b.cms.club.entity.Club;
 import com.a4b.cms.user.entity.User;
